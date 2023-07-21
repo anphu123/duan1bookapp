@@ -1,12 +1,16 @@
 package com.example.duan1bookapp.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.duan1bookapp.MyApplication;
@@ -14,8 +18,11 @@ import com.example.duan1bookapp.R;
 import com.example.duan1bookapp.adapters.AdapterPdfFavorite;
 import com.example.duan1bookapp.databinding.ActivityProfileBinding;
 import com.example.duan1bookapp.models.ModelPdf;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.play.core.integrity.b;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,32 +37,50 @@ public class ProfileActivity extends AppCompatActivity {
     //firebase auth,for leading user data using user uid
     private FirebaseAuth firebaseAuth;
 
+    //firebase current user
+    private FirebaseUser firebaseUser;
+
     //arrayList to hold the books
     private ArrayList<ModelPdf> pdfArrayList;
     //adapter to set in recyclerView
     private AdapterPdfFavorite adapterPdfFavorite;
 
-    private static final String TAG ="PROFILE_TAG";
+    //progress dialog
+    private ProgressDialog progressDialog;
+
+    private static final String TAG = "PROFILE_TAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding =ActivityProfileBinding.inflate(getLayoutInflater());
+        binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //reset data of user info
+        binding.accountTypeTv.setText("N/A");
+        binding.memberDateTv.setText("N/A");
+        binding.favoriteBookCountTv.setText("N/A");
+        binding.accountStatusTv.setText("N/A");
+
         //setup firebase auth
-        firebaseAuth =FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        //get current user
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        //init/setup progress dialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Please wait");
+        progressDialog.setCanceledOnTouchOutside(false);
+
         loadUserInfo();
-
         //need to do in profile not pdf details
-
         loadFavoriteBooks();
 
         //handle click,start profile edit page
         binding.profileEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ProfileActivity.this,ProfileEditActivity.class));
+                startActivity(new Intent(ProfileActivity.this, ProfileEditActivity.class));
             }
         });
 
@@ -65,22 +90,89 @@ public class ProfileActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        //handle click, verify user if not
+        binding.accountStatusTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (firebaseUser.isEmailVerified()) {
+                    //already verified
+                    Toast.makeText(ProfileActivity.this, "Already verified...", Toast.LENGTH_SHORT).show();
+                } else {
+                    //not cerified, show confirmation dialog first
+                    emailVerificationDialog();
+                }
+            }
+        });
+
+    }
+
+    private void emailVerificationDialog() {
+        //Alert dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Verfy Email")
+                .setMessage("Are you sure you want to send email verification instructions to your email " + firebaseUser.getEmail())
+                .setPositiveButton("SEND", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendEmailVerification();
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void sendEmailVerification() {
+        //show progress
+        progressDialog.setMessage("Sending email verification instructions to your email " + firebaseUser.getEmail());
+        progressDialog.show();
+
+        firebaseUser.sendEmailVerification()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        //successfully sent
+                        progressDialog.dismiss();
+                        Toast.makeText(ProfileActivity.this, "Instructions sent, check your email " + firebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //failed to send
+                        progressDialog.dismiss();
+                        Toast.makeText(ProfileActivity.this, "Failed due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void loadUserInfo() {
-        Log.d(TAG, "loadUserInfo: Loading user info of user"+firebaseAuth.getUid());
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users");
+        Log.d(TAG, "loadUserInfo: Loading user info of user" + firebaseAuth.getUid());
+
+        //get verification status, after verification you have to re login to get changes
+        if (firebaseUser.isEmailVerified()) {
+            binding.accountStatusTv.setText("Verified");
+        } else {
+            binding.accountStatusTv.setText("Not Verified");
+        }
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.child(firebaseAuth.getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //get all info of user here from snapshot
-                        String email=""+snapshot.child("email").getValue();
-                        String name=""+snapshot.child("name").getValue();
-                        String profileImage=""+snapshot.child("profileImage").getValue();
-                        String timestamp=""+snapshot.child("timestamp").getValue();
-                        String uid=""+snapshot.child("uid").getValue();
-                        String userType=""+snapshot.child("userType").getValue();
+                        String email = "" + snapshot.child("email").getValue();
+                        String name = "" + snapshot.child("name").getValue();
+                        String profileImage = "" + snapshot.child("profileImage").getValue();
+                        String timestamp = "" + snapshot.child("timestamp").getValue();
+                        String uid = "" + snapshot.child("uid").getValue();
+                        String userType = "" + snapshot.child("userType").getValue();
 
                         //format data to dd/MM/yyyy
                         String formattedDate = MyApplication.formatTimestamp(Long.parseLong(timestamp));
@@ -105,32 +197,33 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void loadFavoriteBooks() {
         //init list
-        pdfArrayList=new ArrayList<>();
+        pdfArrayList = new ArrayList<>();
 
         //load favorite books from database
         //Users > userId  > Favorites
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference("Users");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(firebaseAuth.getUid()).child("Favorites")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //clear list before starting adding data
                         pdfArrayList.clear();
-                        for (DataSnapshot ds: snapshot.getChildren()) {
+                        for (DataSnapshot ds : snapshot.getChildren()) {
                             //we will only get the bookId here and we got other details in adapter using that bookId
-                            String bookId=""+ds.child("bookId").getValue();
+                            String bookId = "" + ds.child("bookId").getValue();
                             //set id to model
-                            ModelPdf modelPdf=new ModelPdf();
+                            ModelPdf modelPdf = new ModelPdf();
                             modelPdf.setId(bookId);
                             //add model to list
                             pdfArrayList.add(modelPdf);
                         }
                         //set number of favorite books
-                        binding.favoriteBookCountTv.setText(""+pdfArrayList.size());//can't set int/long to textView so concatnate with String
+                        binding.favoriteBookCountTv.setText("" + pdfArrayList.size());//can't set int/long to textView so concatnate with String
                         //setup adapter
-                        adapterPdfFavorite=new AdapterPdfFavorite(ProfileActivity.this,pdfArrayList);
+                        adapterPdfFavorite = new AdapterPdfFavorite(ProfileActivity.this, pdfArrayList);
                         //set Adapter to recyclerView
                         binding.booksRv.setAdapter(adapterPdfFavorite);
                     }
