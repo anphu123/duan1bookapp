@@ -1,12 +1,7 @@
 package com.example.duan1bookapp;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -14,7 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.duan1bookapp.activities.AllBooksActivity;
 import com.example.duan1bookapp.adapters.AdapterPdfUser;
+import com.example.duan1bookapp.databinding.FragmentBooksUser2Binding;
 import com.example.duan1bookapp.databinding.FragmentBooksUserBinding;
 import com.example.duan1bookapp.models.ModelPdf;
 import com.google.firebase.database.DataSnapshot;
@@ -27,10 +29,10 @@ import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link BooksUserFragment#newInstance} factory method to
+ * Use the {@link BooksUserFragment2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BooksUserFragment extends Fragment {
+public class BooksUserFragment2 extends Fragment {
 
    // that we passed while creating instance of this fragment
    private String categoryId;
@@ -41,18 +43,18 @@ public class BooksUserFragment extends Fragment {
    private AdapterPdfUser adapterPdfUser;
 
    // view biding
-    private FragmentBooksUserBinding biding;
+    private FragmentBooksUser2Binding biding;
 
     private static final String TAG = "BOOKS_USER_TAG";
 
 
-    public BooksUserFragment() {
+    public BooksUserFragment2() {
         // Required empty public constructor
     }
 
 
-    public static BooksUserFragment newInstance(String categoryId, String category, String uid ) {
-        BooksUserFragment fragment = new BooksUserFragment();
+    public static BooksUserFragment2 newInstance(String categoryId, String category, String uid ) {
+        BooksUserFragment2 fragment = new BooksUserFragment2();
         Bundle args = new Bundle();
         args.putString("categoryId", categoryId);
         args.putString("category", category);
@@ -77,7 +79,7 @@ public class BooksUserFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        biding = FragmentBooksUserBinding.inflate(LayoutInflater.from(getContext()),container,false);
+        biding = FragmentBooksUser2Binding.inflate(LayoutInflater.from(getContext()),container,false);
 
         Log.d(TAG, "onCreateView: Category: " + category);
         if (category.equals("All")){
@@ -98,29 +100,7 @@ public class BooksUserFragment extends Fragment {
         }
 
 
-//         search
-        biding.searchEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // called as and when user type any letter
-                try {
-                    adapterPdfUser.getFilter().filter(s);
-                }
-                catch (Exception e){
-                    Log.d(TAG, "onTextChanged: " + e.getMessage());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
 
 
         return biding.getRoot();

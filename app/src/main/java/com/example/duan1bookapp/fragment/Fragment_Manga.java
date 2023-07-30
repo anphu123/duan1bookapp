@@ -1,16 +1,23 @@
-package com.example.duan1bookapp.activities;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.duan1bookapp.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.duan1bookapp.R;
+import com.example.duan1bookapp.activities.DashboardAdminActivity;
+import com.example.duan1bookapp.activities.MainActivity;
 import com.example.duan1bookapp.adapters.AdapterCategory;
-import com.example.duan1bookapp.databinding.ActivityDashboardAdminBinding;
+import com.example.duan1bookapp.databinding.FragmentBooksUserBinding;
+import com.example.duan1bookapp.databinding.FragmentMangaBinding;
 import com.example.duan1bookapp.models.ModelCategory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,10 +29,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class DashboardAdminActivity extends AppCompatActivity {
-
-    //view binding
-    private ActivityDashboardAdminBinding binding;
+public class Fragment_Manga extends Fragment {
+    private FragmentMangaBinding binding;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -33,17 +38,16 @@ public class DashboardAdminActivity extends AppCompatActivity {
     //arraylist to story category
     private ArrayList<ModelCategory> categoryArrayList;
     private AdapterCategory adapterCategory;
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityDashboardAdminBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentMangaBinding.inflate(LayoutInflater.from(getContext()),container,false);
 
         //init firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
         loadCategories();
+
 
         //edit text change listen, search
         binding.searchEt.addTextChangedListener(new TextWatcher() {
@@ -67,42 +71,9 @@ public class DashboardAdminActivity extends AppCompatActivity {
 
             }
         });
-
-        // handle click, logout
-        binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                firebaseAuth.signOut();
-                checkUser();
-                loadCategories();
-            }
-        });
-
-        //handle click, start   category ad screen
-        binding.addCategoryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(DashboardAdminActivity.this, CategoryAddActivity.class));
-            }
-        });
-        //handle click, start pdf add screen
-        binding.addPdfFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(DashboardAdminActivity.this, PdfAddActivity.class));
-            }
-        });
-
-        //handle click,open profile
-        binding.profileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(DashboardAdminActivity.this,ProfileActivity.class));
-            }
-        });
+        return binding.getRoot();
     }
-
-    public void loadCategories() {
+    private void loadCategories() {
 
         //init  arraylist
         categoryArrayList = new ArrayList<>();
@@ -121,7 +92,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
                     categoryArrayList.add(mode);
                 }
                 //setup adapter
-                adapterCategory = new AdapterCategory(DashboardAdminActivity.this, categoryArrayList);
+                adapterCategory = new AdapterCategory(getContext(), categoryArrayList);
                 //set adapter to recyclerview
                 binding.categoriesRv.setAdapter(adapterCategory);
             }
@@ -139,13 +110,10 @@ public class DashboardAdminActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser == null) {
             //not logged in, go to main screen
-            startActivity(new Intent(DashboardAdminActivity.this, MainActivity.class));
-            finish();
+            startActivity(new Intent(getContext(), MainActivity.class));
+            return;
         } else {
-            // logged in, get user info
-            String email = firebaseUser.getEmail();
-            // set in textView of toolbar
-            binding.subTitleTv.setText(email);
+
         }
 
     }

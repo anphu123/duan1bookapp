@@ -11,21 +11,12 @@
         android:background="@drawable/back02"
         android:layout_marginTop="40dp"/>
 
-<!--    Toolbar-->
+    <!--    Toolbar-->
     <RelativeLayout
         android:id="@+id/toolbarRl"
         android:background="@drawable/shape_toolbar02"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize">
-<!--        back button-->
-        <ImageButton
-            android:id="@+id/backBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_back_white"/>
         <TextView
             android:id="@+id/titleTv"
             android:layout_width="wrap_content"
@@ -34,7 +25,7 @@
             android:text="Profile"
             android:textColor="@color/white"
             android:textStyle="bold" />
-<!--        out imagaeView-->
+        <!--        out imagaeView-->
         <ImageView
             android:id="@+id/logoutBtn"
             android:layout_width="wrap_content"
@@ -82,7 +73,7 @@
         </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
-<!--    shapeable image view with rounded corners for profile image-->
+    <!--    shapeable image view with rounded corners for profile image-->
 
     <TextView
         android:id="@+id/nameTv"
@@ -111,7 +102,7 @@
         android:layout_below="@+id/emailTv"
         android:layout_marginTop="8dp"
         android:layout_height="wrap_content">
-<!--        Account-->
+        <!--        Account-->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -132,7 +123,7 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"/>
         </LinearLayout>
-<!--        Member Since-->
+        <!--        Member Since-->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -153,7 +144,7 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"/>
         </LinearLayout>
-<!--        Favorite Books Count-->
+        <!--        Favorite Books Count-->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
