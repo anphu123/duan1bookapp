@@ -17,18 +17,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.duan1bookapp.BooksUserFragment;
 import com.example.duan1bookapp.BooksUserFragment2;
 import com.example.duan1bookapp.activities.AllBooksActivity;
 
-import com.example.duan1bookapp.activities.DashboardAdminActivity;
-import com.example.duan1bookapp.adapters.AdapterCategory;
 import com.example.duan1bookapp.adapters.AdapterPdfUser;
 import com.example.duan1bookapp.databinding.FragmentHomeBinding;
 import com.example.duan1bookapp.models.ModelCategory;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,6 +49,12 @@ public class Fragment_Home extends Fragment{
     AdapterPdfUser adapterPdfUser;
 
 
+
+    //firebase auth,for leading user data using user uid
+    private FirebaseAuth firebaseAuth;
+
+
+
     @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
@@ -56,11 +62,19 @@ public class Fragment_Home extends Fragment{
         binding=FragmentHomeBinding.inflate(LayoutInflater.from(getContext()),container,false);
 
 
+        //setup firebase auth
+        firebaseAuth =FirebaseAuth.getInstance();
+
+
+
+
         setupViewPagerAdapter(binding.viewpager);
         binding.tabLayout.setupWithViewPager(binding.viewpager);
 
 
-        //search
+
+
+        //search user
         binding.searchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -83,7 +97,6 @@ public class Fragment_Home extends Fragment{
 
             }
         });
-
         //handle click all Books
         binding.tvAllBooks.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,18 +104,14 @@ public class Fragment_Home extends Fragment{
                 startActivity(new Intent(getContext(), AllBooksActivity.class));
             }
         });
-
-
-
-
-
-
-
         return binding.getRoot();
     }
         private void setupViewPagerAdapter(ViewPager viewPager){
         viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, getContext());
         categoryArrayList = new ArrayList<>();
+
+
+
 
         // load categories from firebase
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Categories"); // be careful of spelling
@@ -111,6 +120,7 @@ public class Fragment_Home extends Fragment{
             public void onDataChange( DataSnapshot snapshot) {
                 // clear before adding to list
                 categoryArrayList.clear();
+
 
                 // Now Load from firebase
                 for (DataSnapshot ds: snapshot.getChildren()) {

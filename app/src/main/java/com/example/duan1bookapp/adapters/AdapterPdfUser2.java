@@ -9,37 +9,34 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.duan1bookapp.MyApplication;
 import com.example.duan1bookapp.activities.PdfDetailActivity;
+import com.example.duan1bookapp.databinding.RowPdfUser2Binding;
 import com.example.duan1bookapp.databinding.RowPdfUserBinding;
 import com.example.duan1bookapp.filters.FilterPdfUser;
+import com.example.duan1bookapp.filters.FilterPdfUser2;
 import com.example.duan1bookapp.models.ModelPdf;
+import com.example.duan1bookapp.models.ModelPdf2;
 import com.github.barteksc.pdfviewer.PDFView;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
-public class AdapterPdfUser extends RecyclerView.Adapter<AdapterPdfUser.HolderPdfUser> implements Filterable {
+public class AdapterPdfUser2 extends RecyclerView.Adapter<AdapterPdfUser2.HolderPdfUser> implements Filterable {
 
     private Context context;
-    public ArrayList<ModelPdf> pdfArrayList, filterList;
+    public ArrayList<ModelPdf2> pdfArrayList, filterList;
 
-    private FilterPdfUser filter;
+    private FilterPdfUser2 filter;
 
-    private RowPdfUserBinding binding;
-
-    private FirebaseAuth firebaseAuth;
-
-
+    private RowPdfUser2Binding binding;
 
     private static final String TAG = "ADAPTER_PDF_USER_TAG";
 
-    public AdapterPdfUser(Context context, ArrayList<ModelPdf> pdfArrayList) {
+    public AdapterPdfUser2(Context context, ArrayList<ModelPdf2> pdfArrayList) {
         this.context = context;
         this.pdfArrayList = pdfArrayList;
         this.filterList = pdfArrayList;
@@ -49,15 +46,15 @@ public class AdapterPdfUser extends RecyclerView.Adapter<AdapterPdfUser.HolderPd
     @Override
     public HolderPdfUser onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // bind the view
-        binding = RowPdfUserBinding.inflate(LayoutInflater.from(context),parent,false);
+        binding = RowPdfUser2Binding.inflate(LayoutInflater.from(context),parent,false);
         return new HolderPdfUser(binding.getRoot());
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdapterPdfUser.HolderPdfUser holder, int position) {
-        firebaseAuth=FirebaseAuth.getInstance();
+    public void onBindViewHolder(@NonNull AdapterPdfUser2.HolderPdfUser holder, int position) {
 
-        ModelPdf model = pdfArrayList.get(position);
+
+        ModelPdf2 model = pdfArrayList.get(position);
         String bookId = model.getId();
         String title = model.getTitle();
         String description = model.getDescription();;
@@ -98,20 +95,6 @@ public class AdapterPdfUser extends RecyclerView.Adapter<AdapterPdfUser.HolderPd
                 context.startActivity(intent);
             }
         });
-
-//        holder.pdfView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(firebaseAuth.getCurrentUser() == null){
-//                    Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
-//                }else {
-//                    //not in favorite ,add to favorite
-//                    MyApplication.readingBooks(context,bookId);
-//                }
-//            }
-//        });
-
-
     }
 
     @Override
@@ -122,7 +105,7 @@ public class AdapterPdfUser extends RecyclerView.Adapter<AdapterPdfUser.HolderPd
     @Override
     public Filter getFilter() {
         if (filter == null){
-            filter = new FilterPdfUser(filterList, this);
+            filter = new FilterPdfUser2(filterList, this);
         }
         return filter;
     }

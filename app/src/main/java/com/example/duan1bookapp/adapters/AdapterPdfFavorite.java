@@ -58,6 +58,13 @@ public class AdapterPdfFavorite extends RecyclerView.Adapter<AdapterPdfFavorite.
 
         loadBookPdfDatails(model,holder);
 
+
+
+
+
+
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
