@@ -1,4 +1,4 @@
-package com.example.duan1bookapp;
+package com.example.duan1bookapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,13 +11,6 @@ import com.example.duan1bookapp.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-
-    //Tai
-
-    //abc
-    //123
-    //alo
-    //1235
 
 
     @Override
