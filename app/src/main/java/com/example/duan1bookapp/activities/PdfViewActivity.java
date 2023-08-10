@@ -39,6 +39,8 @@ public class PdfViewActivity extends AppCompatActivity {
     //Continue Books
     boolean isInContinue = false;
     private FirebaseAuth firebaseAuth;
+
+    int currentPage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,10 +57,6 @@ public class PdfViewActivity extends AppCompatActivity {
         loadBookDetail();
         // handle click, go back
 
-        firebaseAuth=FirebaseAuth.getInstance();
-        if(firebaseAuth.getCurrentUser() != null){
-            checkIsContinue();
-        }
 
         binding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,48 +66,6 @@ public class PdfViewActivity extends AppCompatActivity {
         });
 
 
-        //continue
-        binding.imvStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(firebaseAuth.getCurrentUser() == null){
-                    Toast.makeText(PdfViewActivity.this, "You're not logged in", Toast.LENGTH_SHORT).show();
-                }else {
-                    if(isInContinue){
-                        //in favorite ,remove from favorite
-                        MyApplication.removeContinue(PdfViewActivity.this,bookId);
-                    }else {
-                        //not in favorite ,add to favorite
-                        MyApplication.addContinue(PdfViewActivity.this,bookId);
-                    }
-                }
-            }
-        });
-
-    }
-    //check Continue
-    private void checkIsContinue() {
-        //logged in check if its in favorite list or not
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference("Users");
-        ref.child(firebaseAuth.getUid()).child("Continue").child(bookId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        isInContinue =snapshot.exists();//true:if exists ,false if not exists
-                        if(isInContinue){
-                            //exists in favorite
-                            binding.imvStart.setImageResource(R.drawable.ic_star_white);
-                        }else {
-                            //not exists in favorite
-                            binding.imvStart.setImageResource(R.drawable.ic_star_border_white);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
     }
 
     private void loadBookDetail() {
@@ -149,8 +105,11 @@ public class PdfViewActivity extends AppCompatActivity {
                                     @Override
                                     public void onPageChanged(int page, int pageCount) {
                                         // set current and total pages in toolbar subtitle
-                                        int currentPage = (page + 1); // do + 1 because page starts from 0
+                                        currentPage = (page + 1); // do + 1 because page starts from 0
                                         binding.toolbarSubtitleTv.setText(currentPage + "/" + pageCount); // e.g. 3/290
+                                        //save page start
+
+
                                         Log.d(TAG, "onPageChanged: " + currentPage + "/" + pageCount);
                                     }
                                 })

@@ -105,18 +105,18 @@ public class PdfDetailActivity extends AppCompatActivity {
         });
 
         // handle click, open to view pdf
-        binding.readBookBtn.setOnClickListener(new View.OnClickListener() {
+        binding.lnClickRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(PdfDetailActivity.this, PdfViewActivity.class); // create activity for reading book
                 intent1.putExtra("bookId", bookId);
                 startActivity(intent1);
+
+                MyApplication.addReadingBooks(PdfDetailActivity.this,bookId);
             }
         });
-
-
         //handle click,add/remove favorite
-        binding.favoritedBtn.setOnClickListener(new View.OnClickListener() {
+        binding.lnClickFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(firebaseAuth.getCurrentUser() == null){
@@ -132,7 +132,6 @@ public class PdfDetailActivity extends AppCompatActivity {
                 }
             }
         });
-
         //handle click ,show comment add dialog
         binding.addCommentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,7 +285,7 @@ public class PdfDetailActivity extends AppCompatActivity {
                         //format date
                         String date = MyApplication.formatTimestamp(Long.parseLong(timestamp));
 
-                        MyApplication.loadCategory(
+                        MyApplication.loadCategory2(
                                 "" + categoryId,
                                 binding.categoryTv
                         );
@@ -298,7 +297,7 @@ public class PdfDetailActivity extends AppCompatActivity {
                                 binding.pagesTv
 
                         );
-                        MyApplication.loadPdfSize(
+                        MyApplication.loadPdfSize2(
                                 "" + bookUrl,
                                 "" + bookTitle,
                                 binding.sizeTv
@@ -308,7 +307,6 @@ public class PdfDetailActivity extends AppCompatActivity {
                         binding.titleTv.setText(bookTitle);
                         binding.descriptionTv.setText(description);
                         binding.viewsTv.setText(viewsCount.replace("null", "N/A"));
-                        binding.downloadsTv.setText(downloadsCount.replace("null", "N/A"));
                         binding.dateTv.setText(date);
 
                     }
@@ -332,12 +330,12 @@ public class PdfDetailActivity extends AppCompatActivity {
                             //exists in favorite
                             binding.favoritedBtn.setImageResource(R.drawable.ic_favorite_white);
                             binding.tvFollow.setText("UnFollow");
-                            binding.ln.setBackgroundColor(Color.RED);
+                            binding.lnClickFollow.setBackgroundColor(Color.RED);
                         }else {
                             //not exists in favorite
                             binding.favoritedBtn.setImageResource(R.drawable.ic_favorite_border_white);
                             binding.tvFollow.setText("Follow");
-                            binding.ln.setBackgroundColor(getColor(R.color.yellow2));
+                            binding.lnClickFollow.setBackgroundColor(getColor(R.color.yellow2));
 
                         }
                     }

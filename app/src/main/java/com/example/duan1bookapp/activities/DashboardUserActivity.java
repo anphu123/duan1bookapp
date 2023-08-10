@@ -61,8 +61,11 @@ public class DashboardUserActivity extends AppCompatActivity {
                     case R.id.ic_manga:
                         binding.viewpager.setCurrentItem(1);
                         break;
-                    case R.id.ic_user:
+                    case R.id.ic_menubook:
                         binding.viewpager.setCurrentItem(2);
+                        break;
+                    case R.id.ic_user:
+                        binding.viewpager.setCurrentItem(3);
                         break;
                 }
                 return true;
@@ -93,6 +96,9 @@ public class DashboardUserActivity extends AppCompatActivity {
                         binding.bottomNavigation.getMenu().findItem(R.id.ic_manga).setChecked(true);
                         break;
                     case 2:
+                        binding.bottomNavigation.getMenu().findItem(R.id.ic_menubook).setChecked(true);
+                        break;
+                    case 3:
                         binding.bottomNavigation.getMenu().findItem(R.id.ic_user).setChecked(true);
                         break;
                 }

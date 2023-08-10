@@ -11,33 +11,31 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.duan1bookapp.MyApplication;
 import com.example.duan1bookapp.activities.PdfDetailActivity;
+import com.example.duan1bookapp.databinding.RowPdfTrendingBooksAllBinding;
 import com.example.duan1bookapp.databinding.RowPdfTrendingBooksBinding;
-import com.example.duan1bookapp.databinding.RowPdfUserBinding;
 import com.example.duan1bookapp.filters.FilterPdfTrendingBooks;
-import com.example.duan1bookapp.filters.FilterPdfUser;
-import com.example.duan1bookapp.models.ModelPdf;
+import com.example.duan1bookapp.filters.FilterPdfTrendingBooksAll;
 import com.example.duan1bookapp.models.ModelPdfTrendingBooks;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
-public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTrendingBooks.HolderPdfUser> implements Filterable {
+public class AdapterPdfTrendingBooksAll extends RecyclerView.Adapter<AdapterPdfTrendingBooksAll.HolderPdfUser> implements Filterable {
 
     private Context context;
     public ArrayList<ModelPdfTrendingBooks> pdfArrayList, filterList;
-    private FilterPdfTrendingBooks filter;
-    private RowPdfTrendingBooksBinding binding;
+    private FilterPdfTrendingBooksAll filter;
+    private RowPdfTrendingBooksAllBinding binding;
     private FirebaseAuth firebaseAuth;
 
     private static final String TAG = "ADAPTER_PDF_USER_TAG";
 
-    public AdapterPdfTrendingBooks(Context context, ArrayList<ModelPdfTrendingBooks> pdfArrayList) {
+    public AdapterPdfTrendingBooksAll(Context context, ArrayList<ModelPdfTrendingBooks> pdfArrayList) {
         this.context = context;
         this.pdfArrayList = pdfArrayList;
         this.filterList = pdfArrayList;
@@ -47,12 +45,12 @@ public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTren
     @Override
     public HolderPdfUser onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // bind the view
-        binding = RowPdfTrendingBooksBinding.inflate(LayoutInflater.from(context),parent,false);
+        binding = RowPdfTrendingBooksAllBinding.inflate(LayoutInflater.from(context),parent,false);
         return new HolderPdfUser(binding.getRoot());
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdapterPdfTrendingBooks.HolderPdfUser holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterPdfTrendingBooksAll.HolderPdfUser holder, int position) {
         firebaseAuth=FirebaseAuth.getInstance();
         ModelPdfTrendingBooks model = pdfArrayList.get(position);
         String bookId = model.getId();
@@ -98,7 +96,7 @@ public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTren
     @Override
     public Filter getFilter() {
         if (filter == null){
-            filter = new FilterPdfTrendingBooks(filterList, this);
+            filter = new FilterPdfTrendingBooksAll(filterList, this);
         }
         return filter;
     }

@@ -6,6 +6,9 @@
     <item android:id="@+id/ic_manga"
         android:icon="@drawable/ic_book_white"
         android:title="Manga"/>
+    <item android:id="@+id/ic_menubook"
+        android:icon="@drawable/ic_menu_book_white"
+        android:title="Reading"/>
     <item android:id="@+id/ic_user"
         android:icon="@drawable/ic_person_white"
         android:title="User"/>

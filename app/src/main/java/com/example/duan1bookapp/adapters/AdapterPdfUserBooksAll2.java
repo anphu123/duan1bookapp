@@ -11,33 +11,32 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.duan1bookapp.MyApplication;
 import com.example.duan1bookapp.activities.PdfDetailActivity;
-import com.example.duan1bookapp.databinding.RowPdfTrendingBooksBinding;
-import com.example.duan1bookapp.databinding.RowPdfUserBinding;
-import com.example.duan1bookapp.filters.FilterPdfTrendingBooks;
-import com.example.duan1bookapp.filters.FilterPdfUser;
-import com.example.duan1bookapp.models.ModelPdf;
-import com.example.duan1bookapp.models.ModelPdfTrendingBooks;
+import com.example.duan1bookapp.databinding.RowPdfUserBooksAll2Binding;
+import com.example.duan1bookapp.databinding.RowPdfUserBooksAllBinding;
+import com.example.duan1bookapp.filters.FilterPdfUserBooksAll;
+import com.example.duan1bookapp.filters.FilterPdfUserBooksAll2;
+import com.example.duan1bookapp.models.ModelPdfBooksAll;
+import com.example.duan1bookapp.models.ModelPdfBooksAll2;
 import com.github.barteksc.pdfviewer.PDFView;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
-public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTrendingBooks.HolderPdfUser> implements Filterable {
+public class AdapterPdfUserBooksAll2 extends RecyclerView.Adapter<AdapterPdfUserBooksAll2.HolderPdfUser> implements Filterable {
 
     private Context context;
-    public ArrayList<ModelPdfTrendingBooks> pdfArrayList, filterList;
-    private FilterPdfTrendingBooks filter;
-    private RowPdfTrendingBooksBinding binding;
-    private FirebaseAuth firebaseAuth;
+    public ArrayList<ModelPdfBooksAll2> pdfArrayList, filterList;
+
+    private FilterPdfUserBooksAll2 filter;
+
+    private RowPdfUserBooksAll2Binding binding;
 
     private static final String TAG = "ADAPTER_PDF_USER_TAG";
 
-    public AdapterPdfTrendingBooks(Context context, ArrayList<ModelPdfTrendingBooks> pdfArrayList) {
+    public AdapterPdfUserBooksAll2(Context context, ArrayList<ModelPdfBooksAll2> pdfArrayList) {
         this.context = context;
         this.pdfArrayList = pdfArrayList;
         this.filterList = pdfArrayList;
@@ -47,21 +46,20 @@ public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTren
     @Override
     public HolderPdfUser onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // bind the view
-        binding = RowPdfTrendingBooksBinding.inflate(LayoutInflater.from(context),parent,false);
+        binding = RowPdfUserBooksAll2Binding.inflate(LayoutInflater.from(context),parent,false);
         return new HolderPdfUser(binding.getRoot());
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdapterPdfTrendingBooks.HolderPdfUser holder, int position) {
-        firebaseAuth=FirebaseAuth.getInstance();
-        ModelPdfTrendingBooks model = pdfArrayList.get(position);
+    public void onBindViewHolder(@NonNull AdapterPdfUserBooksAll2.HolderPdfUser holder, int position) {
+
+
+        ModelPdfBooksAll2 model = pdfArrayList.get(position);
         String bookId = model.getId();
         String title = model.getTitle();
         String description = model.getDescription();;
         String pdfUrl = model.getUrl();
         String categoryId = model.getCategoryId();
-        String id= model.getId();
-        String uid=model.getUid();
         long timestamp = model.getTimestamp();
 
         // convert time
@@ -80,14 +78,18 @@ public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTren
                 holder.progressBar,
                 null
         );
-        holder.pdfView.setOnClickListener(new View.OnClickListener() {
+
+        //addReadingBooks
+
+        binding.pdfView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(context, PdfDetailActivity.class);
                 intent.putExtra("bookId",bookId);
                 context.startActivity(intent);
             }
         });
+
     }
 
     @Override
@@ -98,7 +100,7 @@ public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTren
     @Override
     public Filter getFilter() {
         if (filter == null){
-            filter = new FilterPdfTrendingBooks(filterList, this);
+            filter = new FilterPdfUserBooksAll2(filterList, this);
         }
         return filter;
     }
@@ -110,12 +112,15 @@ public class AdapterPdfTrendingBooks extends RecyclerView.Adapter<AdapterPdfTren
         ProgressBar progressBar;
         public HolderPdfUser(@NonNull View itemView) {
             super(itemView);
+
             titleTv = binding.titleTv;
             descriptionTv = binding.descriptionTv;
+//            categoryTv = binding.categoryTv;
+//            sizeTv = binding.sizeTv;
+//            dateTv = binding.dateTv;
+
             pdfView = binding.pdfView;
             progressBar = binding.progressBar;
         }
     }
-
-
 }

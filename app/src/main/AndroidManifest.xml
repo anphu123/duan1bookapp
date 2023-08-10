@@ -20,16 +20,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".PdfViewActivityContinue"
+            android:name=".activities.PdfViewActivityContinue"
             android:exported="false" />
         <activity
             android:name=".activities.TrendingBooksAll"
             android:exported="false" />
         <activity
             android:name=".activities.PdfListUserActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.ViewsHistoryBooksAll"
             android:exported="false" />
         <activity
             android:name=".activities.BooksAllActivity"

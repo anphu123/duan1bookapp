@@ -22,14 +22,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.duan1bookapp.MyApplication;
 import com.example.duan1bookapp.activities.PdfDetailActivity;
 import com.example.duan1bookapp.activities.PdfEditActivity;
-import com.example.duan1bookapp.databinding.RowPdfAdminBinding;
+
+import com.example.duan1bookapp.databinding.RowPdfUser3Binding;
 import com.example.duan1bookapp.filters.FilterPdfAdmin;
+import com.example.duan1bookapp.filters.FilterPdfUser3;
 import com.example.duan1bookapp.models.ModelPdf;
 import com.github.barteksc.pdfviewer.PDFView;
 
 import java.util.ArrayList;
 
-public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.HolderPdfAdmin> implements Filterable {
+public class AdapterPdfUser3 extends RecyclerView.Adapter<AdapterPdfUser3.HolderPdfAdmin> implements Filterable {
 
     //context
     private Context context;
@@ -38,8 +40,8 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
     public ArrayList<ModelPdf> pdfArrayList,filterList;
 
     //view binding row_pdf_admin.xml
-    private RowPdfAdminBinding binding;
-    private FilterPdfAdmin filter;
+    private RowPdfUser3Binding binding;
+    private FilterPdfUser3 filter;
 
     private static final String TAG = "PDF_ADAPTER_TAG";
     //progress
@@ -47,7 +49,7 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
 
 
     //contructor
-    public AdapterPdfAdmin(Context context, ArrayList<ModelPdf> pdfArrayList) {
+    public AdapterPdfUser3(Context context, ArrayList<ModelPdf> pdfArrayList) {
         this.context = context;
         this.pdfArrayList = pdfArrayList;
 //        this.filterList= pdfArrayList;
@@ -63,14 +65,14 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
     @Override
     public HolderPdfAdmin onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //bind layout using view binding
-        binding = RowPdfAdminBinding.inflate(LayoutInflater.from(context), parent, false);
+        binding = RowPdfUser3Binding.inflate(LayoutInflater.from(context), parent, false);
         return new HolderPdfAdmin(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(@NonNull HolderPdfAdmin holder, int position) {
         //bind layout using view binding
-        binding = RowPdfAdminBinding.bind(holder.itemView);
+        binding = RowPdfUser3Binding.bind(holder.itemView);
 
         //get data ,set data, handle click etc
 
@@ -85,36 +87,27 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
         String pdfId = model.getId();
         String categoryId = model.getCategoryId();
         long timestamp = model.getTimestamp();
+        String bookId=model.getId();
         //convert timestamp to dd/MM/yyyy
-        String formattedDate = MyApplication.formatTimestamp(timestamp);
+
 
         //set data
         holder.titleTv.setText(title);
         holder.descriptionTv.setText(description);
-        holder.dateTv.setText(formattedDate);
 
-        //load further details like category, pdf from url, pdf size in seprate funtions
-        MyApplication.loadCategory2(""+categoryId,holder.categoryTv);
         MyApplication.loadPdfFromUrlSinglePage(
                 ""+pdfUrl
                 ,""+title
                 ,holder.pdfView
                 ,holder.progressBar
         ,null);
-        MyApplication.loadPdfSize2(""+pdfUrl,""+title,holder.sizeTv);
 
-        //handel click , show dialog with option 1\edit, 2\delete
-        holder.moreBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moreOptionsDialog(model,holder);
-            }
-        });
 
         //handle click , open pdf detail page
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.pdfView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(context, PdfDetailActivity.class);
                 intent.putExtra("bookId",pdfId);
                 context.startActivity(intent);
@@ -123,39 +116,6 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
 
     }
 
-    private void moreOptionsDialog(ModelPdf model, HolderPdfAdmin holder) {
-        // Lấy thông tin về id, url và title của sách
-        // Tạo một dialog AlertDialog để hiển thị các tùy chọn "Edit" và "Delete"
-        // Xử lý sự kiện khi người dùng chọn tùy chọn
-        String bookId = model.getId();
-        String bookUrl = model.getUrl();
-        String bookTitle = model.getTitle();
-
-        //options to show in dialog
-        String[] options = {"Edit", "Delete"};
-
-        //AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Choose Options")
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        if (which == 0) {
-                            //edit click, open pdf edit activity to edit book info
-
-                            Intent intent = new Intent(context, PdfEditActivity.class);
-                            intent.putExtra("bookId", bookId);
-                            context.startActivity(intent);
-
-                        } else if (which==1) {
-                            //delete click
-                            deleteBook(context,""+bookId,""+bookUrl,""+bookTitle);
-                            //deleteBook(model, holder);
-                        }
-                    }
-                })
-                .show();
-    }
 
 
 
@@ -173,7 +133,7 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
     @Override
     public Filter getFilter() {
         if (filter ==null){
-            filter = new FilterPdfAdmin(filterList,this);
+            filter = new FilterPdfUser3(filterList,this);
         }
         return filter;
     }
@@ -196,10 +156,6 @@ public class AdapterPdfAdmin extends RecyclerView.Adapter<AdapterPdfAdmin.Holder
             progressBar = binding.progressBar;
             titleTv = binding.titleTv;
             descriptionTv = binding.descriptionTv;
-            categoryTv = binding.categoryTv;
-            sizeTv = binding.sizeTv;
-            dateTv = binding.dateTv;
-            moreBtn=binding.moreBtn;
 
         }
     }

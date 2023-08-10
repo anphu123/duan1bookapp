@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.duan1bookapp.fragment.Fragment_Home;
 import com.example.duan1bookapp.fragment.Fragment_Manga;
+import com.example.duan1bookapp.fragment.Fragment_ReadingBook;
 import com.example.duan1bookapp.fragment.Fragment_User;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -23,6 +24,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 return new Fragment_Manga();
             case 2:
+                return new Fragment_ReadingBook();
+            case 3:
                 return new Fragment_User();
             default:
                 return new Fragment_Home();
@@ -32,6 +35,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 }
