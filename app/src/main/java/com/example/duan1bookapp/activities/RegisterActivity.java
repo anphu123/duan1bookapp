@@ -1,4 +1,4 @@
-package com.example.duan1bookapp;
+package com.example.duan1bookapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,11 +20,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private String name = "", email = "", password = "" , cPassword = "";
     private ActivityRegisterBinding binding;
-
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
 
@@ -50,37 +51,97 @@ public class RegisterActivity extends AppCompatActivity {
 
         // handle click, begin register
         binding.registerBtn.setOnClickListener(new View.OnClickListener() {
+            boolean isAllFieldsChecked = false;
             @Override
             public void onClick(View v) {
-                validateData();
+
+                // store the returned value of the dedicated function which checks
+                // whether the entered data is valid or if any fields are left blank.
+                isAllFieldsChecked = CheckAllFields();
+                // the boolean variable turns to be true then
+                // only the user must be proceed to the activity2
+                if (isAllFieldsChecked) {
+                    createUserAccount();
+                }
             }
         });
     }
 
-    private String name = "", email = "", password = "";
+    private boolean CheckAllFields() {
 
-    private void validateData() {
-        // Before creating account, lets do some data validation
+        name = binding.nameTil.getEditText().getText().toString();
+        email = binding.emailTil.getEditText().getText().toString().trim();
+        password = binding.passwordTil.getEditText().getText().toString().trim();
+        cPassword = binding.cPasswordTil.getEditText().getText().toString().trim();
 
-        // get data
-        name = binding.nameEt.getText().toString().trim();
-        email = binding.emailEt.getText().toString().trim();
-        password = binding.passwordEt.getText().toString().trim();
-        String cPassword = binding.cPasswordEt.getText().toString().trim();
+        if (!validateName() | !validateEmail() | !validatePassWord() | !validateRepeatPassword() ){
+            return false;
+        }
+         else if (!password.equals(cPassword)){
+            binding.cPasswordTil.setError("password incorrect, please try again ");
+            return false;
+        }
+        // after all validation return true.
+        else {
+            return true;
+        }
+    }
+    private boolean validateEmail(){
+        String emailInput = binding.emailTil.getEditText().getText().toString().trim();
 
-        // validate data
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "Enter your name...", Toast.LENGTH_SHORT).show();
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Invalid email pattern...!", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Enter password...", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(cPassword)) {
-            Toast.makeText(this, "Confirm password...", Toast.LENGTH_SHORT).show();
-        } else if (!password.equals(cPassword)) {
-            Toast.makeText(this, "Password doesn't match...", Toast.LENGTH_SHORT).show();
+        if (emailInput.isEmpty()){
+            binding.emailTil.setError("Email cannot be blank");
+            return false;
+        }
+        else if (!Patterns.EMAIL_ADDRESS.matcher(emailInput).matches())
+        {
+            binding.emailTil.setError("Please enter a valid email address");
+            return false;
+        }
+        else {
+            binding.emailTil.setError(null);
+            return true;
+        }
+    }
+
+    private boolean validateRepeatPassword(){
+        String repeatPassword = binding.cPasswordTil.getEditText().getText().toString().trim();;
+        if (repeatPassword.isEmpty()){
+            binding.cPasswordTil.setError("Repeat password cannot be blank");
+            return false;
+        }
+        else {
+            binding.cPasswordTil.setError(null);
+            return true;
+        }
+    }
+    private boolean validatePassWord(){
+         String passwordInput = binding.passwordTil.getEditText().getText().toString().trim();
+        if (passwordInput.isEmpty()){
+            binding.passwordTil.setError("Password cannot be blank");
+            return false;
+        } else if (passwordInput.length() <6) {
+            binding.passwordTil.setError("Password must have at least 6 characters");
+            return false;
         } else {
-            createUserAccount();
+            binding.passwordTil.setError(null);
+            return true;
+        }
+    }
+
+    private boolean validateName(){
+        String usernameInput = binding.nameTil.getEditText().getText().toString();
+        if (usernameInput.isEmpty()){
+            binding.nameTil.setError("Name cannot be blank");
+            return false;
+        }
+        else if (usernameInput.length() > 20) {
+            binding.nameTil.setError("Username too long ");
+            return false;
+        }
+        else {
+            binding.nameTil.setError(null);
+            return true;
         }
     }
 
@@ -94,13 +155,13 @@ public class RegisterActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        // account creation sucess, now add in firebase realtime database
+                        // account creation success, now add in firebase realtime database
                         updateUserInfo();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(Exception e) {
-                        // acount creating failed
+                        // account creating failed
                         progressDialog.dismiss();
                         Toast.makeText(RegisterActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -122,7 +183,7 @@ public class RegisterActivity extends AppCompatActivity {
         hashMap.put("uid", uid);
         hashMap.put("email", email);
         hashMap.put("name", name);
-        hashMap.put("profileImage", ""); // add emty, will do later
+        hashMap.put("profileImage", ""); // add empty, will do later
         hashMap.put("userType", "user"); // possible values are user, admin: will make admin manually realtime database by changing this value
         hashMap.put("timestamp", timestamp);
 
@@ -137,7 +198,7 @@ public class RegisterActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         Toast.makeText(RegisterActivity.this, "Account created...", Toast.LENGTH_SHORT).show();
                         // since user account is created so start dashboard user
-                        startActivity(new Intent(RegisterActivity.this, DashboardUserActivity.class));
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                         finish();
                     }
                 })

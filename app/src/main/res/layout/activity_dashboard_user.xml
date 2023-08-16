@@ -4,46 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back01"
-    tools:context=".DashboardUserActivity">
 
-    <RelativeLayout
-        android:id="@+id/toolbarRl"
+    tools:context=".activities.DashboardUserActivity">
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@drawable/shape_toolbar02">
-
-        <TextView
-            android:id="@+id/titleTv"
-            android:layout_width="wrap_content"
+        android:layout_above="@id/bottomNavigation"
+        android:layout_height="wrap_content" />
+<!--    bottomNavigation-->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:text="Dashboard User"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:background="@drawable/boder"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="10dp"
 
-        <TextView
-            android:id="@+id/subTitleTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/titleTv"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:text="abc@example.com"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:layout_marginStart="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/logoutBtn"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_logout_white"
-            android:layout_marginEnd="10dp"
-            android:background="@android:color/transparent"/>
-
-    </RelativeLayout>
-
+            android:layout_alignParentBottom="true"
+            app:itemTextColor="@color/color_navigation"
+            app:itemIconTint="@color/color_navigation"
+            app:menu="@menu/menu_navigation"/>
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.example.duan1bookapp;
+package com.example.duan1bookapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setTitle("Please wait");
         progressDialog.setCanceledOnTouchOutside(false);
 
-
+        // handle click, go to register screen
         binding.noAccountTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,31 +55,68 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // back to main_activity
+        binding.bookIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         // handle click, begin login
         binding.loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               validateData();
+                validateData();
             }
         });
-    } private String email = "", password = "";
+    }
 
-    private void validateData() {
-        // Before loggin, lets do some data validation
+    private String email = "", password = "";
 
+    private boolean validateData() {
+        // Before login, lets do some data validation
         //get data
         email = binding.emailEt.getText().toString().trim();
         password = binding.passwordEt.getText().toString().trim();
 
         //validate data
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Invalid email pattern...!", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Enter password...", Toast.LENGTH_SHORT).show();
-        } else {
-            // data is validate, begin login
+        if (!validateEmail() | !validatePassword()) {
+           return false;
+            //Toast.makeText(this, "Invalid email pattern...!", Toast.LENGTH_SHORT).show();
+        }
+        else {
             loginUser();
+            return true;
+            // data is validate, begin login
+        }
+    }
 
+    private boolean validateEmail() {
+       String inputE = binding.emailEt.getText().toString().trim();
+        if (inputE.isEmpty()){
+            binding.emailTil.setError("Email cannot be blank");
+            return false;
+        }
+        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches() ){
+            binding.emailTil.setError("Invalid email pattern...!");
+            return false;
+        }
+        else {
+            binding.emailTil.setError(null);
+            return true;
+        }
+    }
+
+    private boolean validatePassword(){
+        String inputPass = binding.passwordTil.getEditText().getText().toString().trim();
+        if (inputPass.isEmpty()){
+            binding.passwordTil.setError("Password cannot be blank");
+            return false;
+        }
+        else {
+            binding.passwordTil.setError(null);
+            return true;
         }
     }
 
@@ -99,10 +136,10 @@ public class LoginActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
-                    public void onFailure( Exception e) {
+                    public void onFailure(Exception e) {
                         // login failed
                         progressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -119,16 +156,16 @@ public class LoginActivity extends AppCompatActivity {
         ref.child(firebaseUser.getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange( DataSnapshot snapshot) {
+                    public void onDataChange(DataSnapshot snapshot) {
                         progressDialog.dismiss();
                         // get user type
-                        String userType = ""+snapshot.child("userType").getValue();
+                        String userType = "" + snapshot.child("userType").getValue();
                         // check user type
-                        if (userType.equals("user")){
-                            // this is simple user, open user dasboard
+                        if (userType.equals("user")) {
+                            // this is simple user, open user dashboard
                             startActivity(new Intent(LoginActivity.this, DashboardUserActivity.class));
                             finish();
-                        }else if (userType.equals("admin")){
+                        } else if (userType.equals("admin")) {
                             // this is admin, open admin dashboard
                             startActivity((new Intent(LoginActivity.this, DashboardAdminActivity.class)));
                             finish();
@@ -136,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled( DatabaseError error) {
+                    public void onCancelled(DatabaseError error) {
 
                     }
                 });
